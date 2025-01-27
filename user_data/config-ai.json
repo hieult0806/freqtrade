@@ -1,0 +1,147 @@
+{
+    "max_open_trades": 10,
+    "stake_currency": "USDT",
+    "stake_amount": "unlimited",
+    "tradable_balance_ratio": 1,
+    "fiat_display_currency": "USD",
+    "dry_run": true,
+    "dry_run_wallet": 1000,
+    "cancel_open_orders_on_exit": true,
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "timeframe": "1h",
+    "startup_candle_count": 20,
+    "leverage": {
+        "enabled": true,
+        "method": "isolated",
+        "tier": 10
+    },
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 1,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 1
+    },
+    "exchange": {
+        "name": "binance",
+        "key": "zhWHzYG7jSp3iYu72u7HbYGl06F7uHJFtcJqNbAaJGVIXUbgzwsjeg3pnXRJBWTZ",
+        "secret": "FgdHK40gTDjzIm6qPWvnsYmUa333OAL3WLcP15Szg6qC5oswn3ql0fNbjPzXAiWY",
+        "ccxt_config": {},
+        "ccxt_async_config": {},
+        "pair_whitelist": [
+            "BTC/USDT:USDT"
+        ],
+        "futures": {
+            "enabled": true
+        },
+        "pair_blacklist": []
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList",
+            "pairs": [
+                "BTC/USDT:USDT"
+            ]
+        }
+    ],
+    "telegram": {
+        "enabled": false,
+        "token": "6871052624:AAFBauBg6S4LmWY16YY-NItJ7Mb66dlBgKg",
+        "chat_id": "6561543026"
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8888,
+        "verbosity": "error",
+        "enable_openapi": false,
+        "jwt_secret_key": "2171d8fc2517684cacc525fb4a6887adeb57c72fcd41e5fe415b699b0bf6c4d3",
+        "ws_token": "V-roeun-W9OEsQLZsW8dNs1OwJE7H25Tkw",
+        "CORS_origins": [],
+        "username": "rita",
+        "password": "rita"
+    },
+    "freqai": {
+        "enabled": true,
+        "purge_old_models": 2,
+        "train_period_days": 7,
+        "backtest_period_days": 0.1,
+        "live_retrain_hours": 0,
+        "identifier": "rita_ai",
+        "continual_learning": true,
+        "feature_parameters": {
+            "include_timeframes": [
+                "1h",
+                "4h"
+            ],
+            "include_corr_pairlist": [
+                "BTC/USDT:USDT",
+                "ETH/USDT:USDT"
+            ],
+            "label_period_candles": 0,
+            "include_shifted_candles": 0,
+            "DI_threshold": 0.9,
+            "weight_factor": 0.9,
+            "principal_component_analysis": false,
+            "use_SVM_to_remove_outliers": true,
+            "indicator_periods_candles": [
+                7,
+                14
+            ],
+            "plot_feature_importances": 0
+        },
+        "data_split_parameters": {
+            "test_size": 0.33,
+            "random_state": 1
+        },
+        "model_training_parameters": {
+            "gamma": 0.95,
+            "learning_rate": 0.0005,
+            "ent_coef": 0.1,
+            "n_epochs": 25,
+            "n_steps": 2048,
+            "batch_size": 512
+        },
+        "rl_config": {
+            "train_cycles": 25,
+            "add_state_info": false,
+            "max_trade_duration_candles": 60,
+            "max_training_drawdown_pct": 0.8,
+            "cpu_count": 16,
+            "model_type": "PPO",
+            "policy_type": "MlpPolicy",
+            "model_reward_parameters": {
+                "rr": 1,
+                "profit_aim": 0.1,
+                "win_reward_factor": 2
+            },
+            "net_arch": [
+                256,
+                256
+            ],
+            "randomize_starting_position": true
+        }
+    },
+    "bot_name": "Rita AI",
+    "strategy_config": {},
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 5
+    }
+}
