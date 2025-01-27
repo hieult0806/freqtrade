@@ -1,0 +1,5 @@
+// Download Data
+freqtrade download-data -t 1h 4h --timerange=20190127-20250126 --exchange binance --trading-mode futures -p BTC/USDT:USDT ETH/USDT:USDT
+
+// Run
+freqtrade backtesting --strategy RitaTrader --strategy-path user_data/strategies --config user_data/config-ai.json --freqaimodel RitaLearner --timerange 20210501-20250101
