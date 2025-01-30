@@ -46,7 +46,7 @@ class RitaLearner(ReinforcementLearner):
             """Perform cleanup of environment state variables"""
             try:
                 if self._steps_since_cleanup >= self._cleanup_interval:
-                    logger.info("Performing environment cleanup...")
+                    logger.info("Performing environment cleanup...    " + self._cleanup_interval)
                     
                     # Clean position history
                     if len(self._position_history) > self.window_size * 3:
