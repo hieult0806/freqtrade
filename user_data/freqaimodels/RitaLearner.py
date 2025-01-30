@@ -36,6 +36,7 @@ class RitaLearner(ReinforcementLearner):
             self.loss_hold_penalty = 2.0  # Penalty multiplier for holding losing positions
             self.target_profit = 0.02    # 2% target profit
             self.profit_decay_rate = 0.5 # How quickly reward decreases after target
+            self.win_factor = self.rl_config["model_reward_parameters"].get("win_reward_factor", 2)
             
             # Cleanup settings from rl_config
             self._steps_since_cleanup = 0
