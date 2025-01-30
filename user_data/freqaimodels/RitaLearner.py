@@ -81,13 +81,21 @@ class RitaLearner(ReinforcementLearner):
                         self._profits = start_profits + recent_profits
                     
                     # Clean history dict
-                    if self.history:
-                        history_length = len(next(iter(self.history.values())))
-                        if history_length > self.window_size * 2:
-                            for key in self.history:
-                                start_history = self.history[key][:self.window_size]
-                                recent_history = self.history[key][-self.window_size:]
-                                self.history[key] = start_history + recent_history
+                    if len(self.trade_history) > self.window_size * 2:
+                        profitable_trades = [
+                            trade for trade in self.trade_history 
+                            if trade.get('profit', 0) > self.hold_threshold
+                        ]
+                        recent_trades = self.trade_history[-self.window_size:]
+                        self.trade_history = list({
+                            trade['index']: trade 
+                            for trade in (profitable_trades + recent_trades)
+                        }.values())
+                    
+                    # Clean up close trade profits if it exists
+                    if hasattr(self, 'close_trade_profit') and len(self.close_trade_profit) > self.window_size * 2:
+                        recent_profits = self.close_trade_profit[-self.window_size:]
+                        self.close_trade_profit = recent_profits
                     
                     # Reset portfolio log returns if needed
                     if len(self.portfolio_log_returns) > len(self.prices):
