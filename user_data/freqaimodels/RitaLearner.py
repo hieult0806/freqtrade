@@ -81,11 +81,7 @@ class RitaLearner(ReinforcementLearner):
                                 start_history = self.history[key][:self.window_size]
                                 recent_history = self.history[key][-self.window_size:]
                                 self.history[key] = start_history + recent_history
-                    
-                    # Clean portfolio log returns
-                    if len(self.portfolio_log_returns) > len(self.prices):
-                        self.portfolio_log_returns = np.zeros(len(self.prices))
-                    
+                                        
                     gc.collect()
                     self._steps_since_cleanup = 0
                     logger.info("Environment cleanup completed")
