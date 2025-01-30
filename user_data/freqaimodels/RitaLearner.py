@@ -40,7 +40,7 @@ class RitaLearner(ReinforcementLearner):
             
             # Cleanup settings from rl_config
             self._steps_since_cleanup = 0
-            self._cleanup_interval = self.rl_config.get('cleanup_interval', 1000000)
+            self._cleanup_interval = 1000000
             
         def perform_cleanup(self):
             """Perform cleanup of environment state variables"""
