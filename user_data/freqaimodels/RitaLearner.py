@@ -1,6 +1,7 @@
 import gc
 import logging
 import math
+import time
 import numpy as np
 from typing import Any, Dict, List, Optional, Type
 
@@ -38,53 +39,98 @@ class RitaLearner(ReinforcementLearner):
             self.profit_decay_rate = 0.5 # How quickly reward decreases after target
             self.win_factor = self.rl_config["model_reward_parameters"].get("win_reward_factor", 2)
             
-            # Cleanup settings from rl_config
+            # Increase cleanup interval significantly to reduce overhead
             self._steps_since_cleanup = 0
-            self._cleanup_interval = 1000000
+            self._cleanup_interval = 100000  # Increased from 1000
+            self._last_cleanup_time = time.time()
+            self._min_cleanup_interval_seconds = 60  # Minimum 60 seconds between cleanups
             
+        def should_cleanup(self) -> bool:
+            """Determine if cleanup should be performed"""
+            current_time = time.time()
+            time_since_last_cleanup = current_time - self._last_cleanup_time
+            
+            # Always allow force cleanup
+            if self._steps_since_cleanup >= self._cleanup_interval:
+                logger.info(f"Cleanup triggered by step count: {self._steps_since_cleanup}")
+                return True
+                
+            # Check if enough time has passed since last cleanup
+            if time_since_last_cleanup < self._min_cleanup_interval_seconds:
+                return False
+                
+            # Check if histories have grown significantly
+            position_history_growth = len(self._position_history) - self._last_position_history_size
+            trade_history_growth = len(self.trade_history) - self._last_trade_history_size
+            
+            if position_history_growth > self.window_size * 3:
+                logger.info(f"Cleanup triggered by position history growth: {position_history_growth}")
+                return True
+                
+            if trade_history_growth > self.window_size * 2:
+                logger.info(f"Cleanup triggered by trade history growth: {trade_history_growth}")
+                return True
+                
+            return False   
+        
         def perform_cleanup(self):
             """Perform cleanup of environment state variables"""
             try:
-                if self._steps_since_cleanup >= self._cleanup_interval:
-                    logger.info("Performing environment cleanup...    " + self._cleanup_interval)
+                if not self.should_cleanup():
+                    return
                     
-                    # Clean position history
-                    if len(self._position_history) > self.window_size * 3:
-                        start_positions = self._position_history[:self.window_size]
-                        mid_point = len(self._position_history) // 2
-                        mid_positions = self._position_history[mid_point:mid_point + self.window_size]
-                        recent_positions = self._position_history[-self.window_size:]
-                        self._position_history = start_positions + mid_positions + recent_positions
-                    
-                    # Clean trade history
-                    if len(self.trade_history) > self.window_size * 2:
-                        profitable_trades = [
-                            trade for trade in self.trade_history 
-                            if trade.get('profit', 0) > self.hold_threshold
-                        ]
-                        recent_trades = self.trade_history[-self.window_size:]
-                        self.trade_history = list({
-                            trade['index']: trade 
-                            for trade in (profitable_trades + recent_trades)
-                        }.values())
-                    
-                    # Clean up close trade profits if it exists
-                    if hasattr(self, 'close_trade_profit') and len(self.close_trade_profit) > self.window_size * 2:
-                        recent_profits = self.close_trade_profit[-self.window_size:]
-                        self.close_trade_profit = recent_profits
-                    
-                    # Clean history dict
-                    if self.history:
-                        history_length = len(next(iter(self.history.values())))
-                        if history_length > self.window_size * 2:
-                            for key in self.history:
-                                start_history = self.history[key][:self.window_size]
-                                recent_history = self.history[key][-self.window_size:]
-                                self.history[key] = start_history + recent_history
-                                        
-                    gc.collect()
-                    self._steps_since_cleanup = 0
-                    logger.info("Environment cleanup completed")
+                cleanup_start = time.time()
+                logger.info("Starting environment cleanup...")
+                
+                # Track initial sizes
+                initial_position_size = len(self._position_history)
+                initial_trade_size = len(self.trade_history)
+                
+                # Clean position history
+                if len(self._position_history) > self.window_size * 3:
+                    start_positions = self._position_history[:self.window_size]
+                    recent_positions = self._position_history[-self.window_size * 2:]
+                    self._position_history = start_positions + recent_positions
+                
+                # Clean trade history
+                if len(self.trade_history) > self.window_size * 2:
+                    profitable_trades = [
+                        trade for trade in self.trade_history 
+                        if trade.get('profit', 0) > self.hold_threshold
+                    ][-self.window_size:]  # Keep only most recent profitable trades
+                    recent_trades = self.trade_history[-self.window_size:]
+                    self.trade_history = list({
+                        trade['index']: trade 
+                        for trade in (profitable_trades + recent_trades)
+                    }.values())
+                
+                # Clean up close trade profits if it exists
+                if hasattr(self, 'close_trade_profit') and len(self.close_trade_profit) > self.window_size * 2:
+                    self.close_trade_profit = self.close_trade_profit[-self.window_size:]
+                
+                # Clean history dict
+                if self.history:
+                    history_length = len(next(iter(self.history.values())))
+                    if history_length > self.window_size * 2:
+                        for key in self.history:
+                            self.history[key] = self.history[key][-self.window_size * 2:]
+                
+                # Force garbage collection
+                gc.collect()
+                
+                # Update tracking variables
+                self._steps_since_cleanup = 0
+                self._last_cleanup_time = time.time()
+                self._last_position_history_size = len(self._position_history)
+                self._last_trade_history_size = len(self.trade_history)
+                
+                # Log cleanup results
+                cleanup_duration = time.time() - cleanup_start
+                logger.info(
+                    f"Cleanup completed in {cleanup_duration:.2f}s. "
+                    f"Position history: {initial_position_size}->{len(self._position_history)}, "
+                    f"Trade history: {initial_trade_size}->{len(self.trade_history)}"
+                )
                     
             except Exception as e:
                 logger.error(f"Error during cleanup: {str(e)}")
