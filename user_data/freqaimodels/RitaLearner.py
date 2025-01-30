@@ -48,39 +48,15 @@ class RitaLearner(ReinforcementLearner):
                 if self._steps_since_cleanup >= self._cleanup_interval:
                     logger.info("Performing environment cleanup...")
                     
-                    # Clean up BaseEnvironment core state variables
+                    # Clean position history
                     if len(self._position_history) > self.window_size * 3:
-                        # Keep start, middle and recent positions
                         start_positions = self._position_history[:self.window_size]
                         mid_point = len(self._position_history) // 2
                         mid_positions = self._position_history[mid_point:mid_point + self.window_size]
                         recent_positions = self._position_history[-self.window_size:]
                         self._position_history = start_positions + mid_positions + recent_positions
                     
-                    # Clean trade history while preserving important trades
-                    if len(self.trade_history) > self.window_size * 2:
-                        # Keep profitable trades and recent trades
-                        profitable_trades = [
-                            trade for trade in self.trade_history 
-                            if trade.get('profit', 0) > self.hold_threshold
-                        ]
-                        recent_trades = self.trade_history[-self.window_size:]
-                        self.trade_history = list({
-                            trade['index']: trade 
-                            for trade in (profitable_trades + recent_trades)
-                        }.values())
-                    
-                    # Reset streaks to prevent overflow
-                    self.win_streak = min(self.win_streak, 10)
-                    self.lose_streak = min(self.lose_streak, 10)
-                    
-                    # Clean profits history
-                    if len(self._profits) > self.window_size * 2:
-                        start_profits = self._profits[:2]  # Keep initial profits
-                        recent_profits = self._profits[-self.window_size:]  # Keep recent profits
-                        self._profits = start_profits + recent_profits
-                    
-                    # Clean history dict
+                    # Clean trade history
                     if len(self.trade_history) > self.window_size * 2:
                         profitable_trades = [
                             trade for trade in self.trade_history 
@@ -97,14 +73,20 @@ class RitaLearner(ReinforcementLearner):
                         recent_profits = self.close_trade_profit[-self.window_size:]
                         self.close_trade_profit = recent_profits
                     
-                    # Reset portfolio log returns if needed
+                    # Clean history dict
+                    if self.history:
+                        history_length = len(next(iter(self.history.values())))
+                        if history_length > self.window_size * 2:
+                            for key in self.history:
+                                start_history = self.history[key][:self.window_size]
+                                recent_history = self.history[key][-self.window_size:]
+                                self.history[key] = start_history + recent_history
+                    
+                    # Clean portfolio log returns
                     if len(self.portfolio_log_returns) > len(self.prices):
                         self.portfolio_log_returns = np.zeros(len(self.prices))
                     
-                    # Force garbage collection
                     gc.collect()
-                    
-                    # Reset cleanup counter
                     self._steps_since_cleanup = 0
                     logger.info("Environment cleanup completed")
                     
