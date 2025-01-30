@@ -46,30 +46,30 @@ class RitaLearner(ReinforcementLearner):
             self._min_cleanup_interval_seconds = 60 * 30  # Minimum 60 seconds between cleanups
             
         def should_cleanup(self) -> bool:
-            """Determine if cleanup should be performed"""
-            current_time = time.time()
-            time_since_last_cleanup = current_time - self._last_cleanup_time
+            # """Determine if cleanup should be performed"""
+            # current_time = time.time()
+            # time_since_last_cleanup = current_time - self._last_cleanup_time
             
-            # Always allow force cleanup
-            if self._steps_since_cleanup >= self._cleanup_interval:
-                logger.info(f"Cleanup triggered by step count: {self._steps_since_cleanup}")
-                return True
+            # # Always allow force cleanup
+            # if self._steps_since_cleanup >= self._cleanup_interval:
+            #     logger.info(f"Cleanup triggered by step count: {self._steps_since_cleanup}")
+            #     return True
                 
-            # Check if enough time has passed since last cleanup
-            if time_since_last_cleanup < self._min_cleanup_interval_seconds:
-                return False
+            # # Check if enough time has passed since last cleanup
+            # if time_since_last_cleanup < self._min_cleanup_interval_seconds:
+            #     return False
                 
-            # Check if histories have grown significantly
-            position_history_growth = len(self._position_history) - self._last_position_history_size
-            trade_history_growth = len(self.trade_history) - self._last_trade_history_size
+            # # Check if histories have grown significantly
+            # position_history_growth = len(self._position_history) - self._last_position_history_size
+            # trade_history_growth = len(self.trade_history) - self._last_trade_history_size
             
-            if position_history_growth > self.window_size * 3:
-                logger.info(f"Cleanup triggered by position history growth: {position_history_growth}")
-                return True
+            # if position_history_growth > self.window_size * 3:
+            #     logger.info(f"Cleanup triggered by position history growth: {position_history_growth}")
+            #     return True
                 
-            if trade_history_growth > self.window_size * 2:
-                logger.info(f"Cleanup triggered by trade history growth: {trade_history_growth}")
-                return True
+            # if trade_history_growth > self.window_size * 2:
+            #     logger.info(f"Cleanup triggered by trade history growth: {trade_history_growth}")
+            #     return True
                 
             return False   
         
