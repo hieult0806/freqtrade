@@ -43,7 +43,7 @@ class RitaLearner(ReinforcementLearner):
             self._steps_since_cleanup = 0
             self._cleanup_interval = 100000  # Increased from 1000
             self._last_cleanup_time = time.time()
-            self._min_cleanup_interval_seconds = 60  # Minimum 60 seconds between cleanups
+            self._min_cleanup_interval_seconds = 60 * 30  # Minimum 60 seconds between cleanups
             
         def should_cleanup(self) -> bool:
             """Determine if cleanup should be performed"""
