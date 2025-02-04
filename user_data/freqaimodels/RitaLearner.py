@@ -140,12 +140,12 @@ class RitaLearner(ReinforcementLearner):
             # For neutral actions
             return self.calculate_neutral_reward(trade_duration)
 
-        def calculate_neutral_reward(self, trade_duration):
+        def calculate_neutral_reward(self, t):
             """
             Reward function for neutral actions
             """
-            designated_trade_duration = self.designated_trade_duration
-            return 1 - ((trade_duration / designated_trade_duration) ** 3)
+            m = self.designated_trade_duration
+            return -(((10 / 4)(t / m)) ** 2)
 
         def calculate_win_reward(self, t, p, g, m, w, h, s):
             # Term 1: (p/g + 1)
