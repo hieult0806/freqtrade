@@ -43,7 +43,7 @@ class RitaLearner(ReinforcementLearner):
             self.action_matrix = np.array(
                 [
                     [+1, -1, -1, -1, +1],  # Short position
-                    [+1, +1, -1, -1, -1],  # Long position
+                    [+1, -1, +1, -1, -1],  # Long position
                     [-1, +1, -1, +1, -1],  # Neutral position
                 ]
             )
@@ -145,7 +145,7 @@ class RitaLearner(ReinforcementLearner):
             Reward function for neutral actions
             """
             m = self.designated_trade_duration
-            return -(((10 / 4) * ((t + 1) / m)) ** 2)
+            return -(((10 * t + 1) / (4 * m)) ** 2)
 
         def calculate_win_reward(self, t, p, g, m, w, h, s):
             # Term 1: (p/g + 1)
