@@ -101,7 +101,7 @@ class RitaLearner(ReinforcementLearner):
 
         def calculate_reward(self, action: int) -> float:
             if not self._is_valid(action):
-                return -1
+                return -200
 
             trade_duration = self._current_tick - (
                 self._last_trade_tick if self._last_trade_tick is not None else self._current_tick
@@ -109,11 +109,33 @@ class RitaLearner(ReinforcementLearner):
 
             # For entering trades
             if action in (Actions.Long_enter.value, Actions.Short_enter.value):
-                return 1
+                return 20
+
+            p = self.get_unrealized_profit()
+            g = self.profit_aim
+            m = self.designated_trade_duration
+            w = self.win_factor
+            s = self.win_streak
+            l_o = self.lose_streak
+            t = trade_duration
+            h = abs(self._total_profit)
 
             # For exiting positions
             if action in (Actions.Long_exit.value, Actions.Short_exit.value):
-                return self.calculate_exit_reward(self.get_unrealized_profit(), trade_duration)
+                if p == 0:
+                    return -100
+                elif p > 0:
+                    return self.calculate_win_reward(t, p, g, m, w, h, s)
+                else:
+                    return self.calculate_loose_reward(
+                        t,
+                        p,
+                        g,
+                        m,
+                        w,
+                        h,
+                        l_o,
+                    )
 
             # For neutral actions
             return self.calculate_neutral_reward(trade_duration)
@@ -125,20 +147,28 @@ class RitaLearner(ReinforcementLearner):
             designated_trade_duration = self.designated_trade_duration
             return 1 - ((trade_duration / designated_trade_duration) ** 3)
 
-        def calculate_exit_reward(self, unrealized_profit, trade_duration):
-            """
-            Reward function for winning trades
-            """
-            designated_trade_duration = self.designated_trade_duration
+        def calculate_win_reward(self, t, p, g, m, w, h, s):
+            # Term 1: (p/g + 1)
+            term1 = (p / g) + 1
 
-            result = (
-                unrealized_profit / self.profit_aim
-            ) ** 5  # Value Range: (-)infinite to (+)positive
+            # Term 2: (m / (t^2 + m))
+            term2 = m / (t**2 + m)
 
-            result *= 1 + ((self.win_streak + self.lose_streak) / 10) ** (3 / 20)
-            result *= (
-                1
-                + (max((designated_trade_duration - trade_duration), 0) / designated_trade_duration)
-                ** 2
-            )
-            return result
+            # Term 3: w × (h+1)^2 × (s+1)
+            term3 = w * (h + 1) ** 2 * (s + 1)
+
+            # Final result: product of all terms
+            return term1 * term2 * term3
+
+        def calculate_loose_reward(self, t, p, g, m, w, h, l):
+            # Term 1: (|p| / g + 1)
+            term1 = (abs(p) / g) + 1
+
+            # Term 2: (t / m)
+            term2 = t / m
+
+            # Term 3: w * (h+1)^2 * (l+1)
+            term3 = w * ((1 / h) + 1) ** 2 * (l + 1)
+
+            # Combine the terms, take absolute value, then negate
+            return -abs(term1 * term2 * term3)
