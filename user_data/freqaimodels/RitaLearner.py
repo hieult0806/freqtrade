@@ -101,7 +101,7 @@ class RitaLearner(ReinforcementLearner):
 
         def calculate_reward(self, action: int) -> float:
             if not self._is_valid(action):
-                return -200
+                return -20
 
             trade_duration = self._current_tick - (
                 self._last_trade_tick if self._last_trade_tick is not None else self._current_tick
@@ -123,7 +123,7 @@ class RitaLearner(ReinforcementLearner):
             # For exiting positions
             if action in (Actions.Long_exit.value, Actions.Short_exit.value):
                 if p == 0:
-                    return -100
+                    return -20
                 elif p > 0:
                     return self.calculate_win_reward(t, p, g, m, w, h, s)
                 else:
