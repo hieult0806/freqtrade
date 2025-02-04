@@ -145,7 +145,7 @@ class RitaLearner(ReinforcementLearner):
             Reward function for neutral actions
             """
             m = self.designated_trade_duration
-            return -(((10 / 4)(t / m)) ** 2)
+            return -(((10 / 4) * ((t + 1) / m)) ** 2)
 
         def calculate_win_reward(self, t, p, g, m, w, h, s):
             # Term 1: (p/g + 1)
@@ -160,7 +160,7 @@ class RitaLearner(ReinforcementLearner):
             # Final result: product of all terms
             return term1 * term2 * term3
 
-        def calculate_loose_reward(self, t, p, g, m, w, h, l):
+        def calculate_loose_reward(self, t, p, g, m, w, h, l_o):
             # Term 1: (|p| / g + 1)
             term1 = (abs(p) / g) + 1
 
@@ -168,7 +168,7 @@ class RitaLearner(ReinforcementLearner):
             term2 = t / m
 
             # Term 3: w * (h+1)^2 * (l+1)
-            term3 = w * ((1 / h) + 1) ** 2 * (l + 1)
+            term3 = w * ((1 / h) + 1) ** 2 * (l_o + 1)
 
             # Combine the terms, take absolute value, then negate
             return -abs(term1 * term2 * term3)
