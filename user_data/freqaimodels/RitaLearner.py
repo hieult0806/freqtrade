@@ -1,8 +1,6 @@
 import gc
 import logging
-import math
-import time
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict
 
 import numpy as np
 
@@ -32,6 +30,8 @@ class RitaLearner(ReinforcementLearner):
             super().__init__(**kwargs)
             self.win_streak = 0
             self.lose_streak = 0
+            self.consecutive_neutral_actions = 0
+            self.max_consecutive_neutral = 5  # Maximum allowed consecutive neutral actions
 
             self.win_factor = self.rl_config["model_reward_parameters"].get("win_reward_factor", 2)
             self.designated_trade_duration = self.rl_config.get("max_trade_duration_candles", 300)
@@ -58,6 +58,11 @@ class RitaLearner(ReinforcementLearner):
             """Step with streak updates only on trade completion"""
             # Get the current position before step
             previous_position = self._position
+
+            if action == Actions.Neutral.value:
+                self.consecutive_neutral_actions += 1
+            else:
+                self.consecutive_neutral_actions = 0
 
             # Execute main step logic
             observation, reward, done, truncated, info = super().step(action)
@@ -109,7 +114,7 @@ class RitaLearner(ReinforcementLearner):
 
             # For entering trades
             if action in (Actions.Long_enter.value, Actions.Short_enter.value):
-                return 20
+                return self.calculate_entry_reward(action)
 
             p = self.get_unrealized_profit()
             g = self.profit_aim
@@ -140,14 +145,42 @@ class RitaLearner(ReinforcementLearner):
             # For neutral actions
             return self.calculate_neutral_reward(trade_duration)
 
+        def calculate_entry_reward(self, action: int) -> float:
+            """
+            Enhanced entry reward calculation
+            - Rewards entry more after longer neutral periods
+            - Considers win/loss streaks for adaptive entry rewards
+            """
+            base_reward = 25  # Increased base reward for entry
+
+            # Add bonus for entering after being neutral for a while
+            time_since_last_trade = self._current_tick - (
+                self._last_trade_tick if self._last_trade_tick is not None else self._current_tick
+            )
+            neutral_bonus = min(15, time_since_last_trade / 10)  # Cap at +15
+
+            # Add streak-based component
+            streak_bonus = (
+                self.win_streak * 2 - self.lose_streak
+            )  # Encourage entries during winning streaks
+
+            return base_reward + neutral_bonus + streak_bonus
+
         def calculate_neutral_reward(self, t):
             """
-            Reward function for neutral actions
+            Enhanced penalty for neutral actions
+            - Increases penalty based on time spent neutral
+            - Adds base penalty for choosing neutral
             """
             m = self.designated_trade_duration
-            return -(((30 * t + 1) / (4 * m)) ** 2)
+            base_penalty = -10  # Base penalty for choosing neutral
+            time_penalty = -(((40 * t + 1) / (3 * m)) ** 2)  # Increased time-based penalty
+            return base_penalty + time_penalty
 
         def calculate_win_reward(self, t, p, g, m, w, h, s):
+            """
+            Enhanced reward for winning trades
+            """
             # Term 1: (p/g + 1)
             term1 = ((p / g) + 1) ** 4
 
@@ -161,6 +194,9 @@ class RitaLearner(ReinforcementLearner):
             return term1 * term2 * term3
 
         def calculate_loose_reward(self, t, p, g, m, w, h, l_o):
+            """
+            Enhanced penalty for losing trades
+            """
             # Term 1: (|p| / g + 1)
             term1 = (abs(p) / g) + 1
 
