@@ -106,7 +106,7 @@ class RitaLearner(ReinforcementLearner):
 
         def calculate_reward(self, action: int) -> float:
             if not self._is_valid(action):
-                return -20
+                return -2000
 
             trade_duration = self._current_tick - (
                 self._last_trade_tick if self._last_trade_tick is not None else self._current_tick
@@ -151,7 +151,7 @@ class RitaLearner(ReinforcementLearner):
             - Rewards entry more after longer neutral periods
             - Considers win/loss streaks for adaptive entry rewards
             """
-            base_reward = 25  # Increased base reward for entry
+            base_reward = 10  # Increased base reward for entry
 
             # Add bonus for entering after being neutral for a while
             time_since_last_trade = self._current_tick - (
@@ -173,7 +173,7 @@ class RitaLearner(ReinforcementLearner):
             - Adds base penalty for choosing neutral
             """
             m = self.designated_trade_duration
-            base_penalty = -10  # Base penalty for choosing neutral
+            base_penalty = -5  # Base penalty for choosing neutral
             time_penalty = -(((40 * t + 1) / (3 * m)) ** 2)  # Increased time-based penalty
             return base_penalty + time_penalty
 
