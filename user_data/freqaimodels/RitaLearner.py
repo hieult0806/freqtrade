@@ -182,7 +182,7 @@ class RitaLearner(ReinforcementLearner):
             Enhanced reward for winning trades
             """
             # Term 1: (p/g + 1)
-            term1 = ((p / g) + 1) ** 4
+            term1 = ((p / g) + 1) ** 8
 
             # Term 2: (m / (t^2 + m))
             term2 = m / (t**2 + m)
