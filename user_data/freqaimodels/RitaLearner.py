@@ -188,7 +188,7 @@ class RitaLearner(ReinforcementLearner):
             term2 = m / (t**2 + m)
 
             # Term 3: w × (h+1)^2 × (s+1)
-            term3 = w * (h + 1) ** 8 * (s + 1)
+            term3 = w * (h + 5) ** 2 * (s + 1)
 
             # Final result: product of all terms
             return term1 * term2 * term3
