@@ -39,8 +39,8 @@
     },
     "exchange": {
         "name": "binance",
-        "key": "zhWHzYG7jSp3iYu72u7HbYGl06F7uHJFtcJqNbAaJGVIXUbgzwsjeg3pnXRJBWTZ",
-        "secret": "FgdHK40gTDjzIm6qPWvnsYmUa333OAL3WLcP15Szg6qC5oswn3ql0fNbjPzXAiWY",
+        "key": "MjbGeskIjXNXiHJFLC8CCYwN7kS7tmLS6mkp7mWmAxkTqHDp2uqKd9ZsJVFLXIdr",
+        "secret": "hlQhWv5z2jPQG9Ky7KIMJxmf1NnRGepQVaa9kHJqNzPctWC2E6r9D5G8zDBx9tsp",
         "ccxt_config": {},
         "ccxt_async_config": {},
         "pair_whitelist": [
@@ -60,14 +60,14 @@
         }
     ],
     "telegram": {
-        "enabled": false,
+        "enabled": true,
         "token": "6871052624:AAFBauBg6S4LmWY16YY-NItJ7Mb66dlBgKg",
         "chat_id": "6561543026"
     },
     "api_server": {
         "enabled": true,
         "listen_ip_address": "0.0.0.0",
-        "listen_port": 8888,
+        "listen_port": 6666,
         "verbosity": "error",
         "enable_openapi": false,
         "jwt_secret_key": "2171d8fc2517684cacc525fb4a6887adeb57c72fcd41e5fe415b699b0bf6c4d3",
@@ -76,7 +76,7 @@
         "username": "rita",
         "password": "rita"
     },
-    "bot_name": "Rita AI",
+    "bot_name": "Era AI",
     "strategy_config": {},
     "initial_state": "running",
     "force_entry_enable": false,
