@@ -1,0 +1,86 @@
+{
+    "max_open_trades": 1,
+    "stake_currency": "USDT",
+    "stake_amount": "unlimited",
+    "tradable_balance_ratio": 1,
+    "fiat_display_currency": "USD",
+    "dry_run": true,
+    "dry_run_wallet": 30000,
+    "cancel_open_orders_on_exit": true,
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "timeframe": "5m",
+    "startup_candle_count": 5,
+    "leverage": {
+        "enabled": true,
+        "method": "isolated",
+        "tier": 1
+    },
+    "unfilledtimeout": {
+        "entry": 10,
+        "exit": 10,
+        "exit_timeout_count": 0,
+        "unit": "minutes"
+    },
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 2,
+        "price_last_balance": 0.0,
+        "check_depth_of_market": {
+            "enabled": false,
+            "bids_to_ask_delta": 1
+        }
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 1
+    },
+    "exchange": {
+        "name": "binance",
+        "key": "zhWHzYG7jSp3iYu72u7HbYGl06F7uHJFtcJqNbAaJGVIXUbgzwsjeg3pnXRJBWTZ",
+        "secret": "FgdHK40gTDjzIm6qPWvnsYmUa333OAL3WLcP15Szg6qC5oswn3ql0fNbjPzXAiWY",
+        "ccxt_config": {},
+        "ccxt_async_config": {},
+        "pair_whitelist": [
+            "BTC/USDT:USDT"
+        ],
+        "futures": {
+            "enabled": true
+        },
+        "pair_blacklist": []
+    },
+    "pairlists": [
+        {
+            "method": "StaticPairList",
+            "pairs": [
+                "BTC/USDT:USDT"
+            ]
+        }
+    ],
+    "telegram": {
+        "enabled": false,
+        "token": "6871052624:AAFBauBg6S4LmWY16YY-NItJ7Mb66dlBgKg",
+        "chat_id": "6561543026"
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8888,
+        "verbosity": "error",
+        "enable_openapi": false,
+        "jwt_secret_key": "2171d8fc2517684cacc525fb4a6887adeb57c72fcd41e5fe415b699b0bf6c4d3",
+        "ws_token": "V-roeun-W9OEsQLZsW8dNs1OwJE7H25Tkw",
+        "CORS_origins": [],
+        "username": "rita",
+        "password": "rita"
+    },
+    "bot_name": "Rita AI",
+    "strategy_config": {},
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 5
+    }
+}
