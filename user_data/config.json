@@ -5,6 +5,7 @@
     "tradable_balance_ratio": 1,
     "fiat_display_currency": "USD",
     "dry_run": true,
+    "db_url": "sqlite:///tradesv34.dryrun.sqlite",
     "dry_run_wallet": 30000,
     "cancel_open_orders_on_exit": true,
     "trading_mode": "futures",
