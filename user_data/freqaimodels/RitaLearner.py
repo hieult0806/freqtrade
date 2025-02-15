@@ -174,7 +174,7 @@ class RitaLearner(ReinforcementLearner):
             """
             m = self.designated_trade_duration
             base_penalty = -5  # Base penalty for choosing neutral
-            time_penalty = -(((40 * t + 1) / (3 * m)) ** 2)  # Increased time-based penalty
+            time_penalty = -(((40 * t + 1) / (5 * m)) ** 2)  # Increased time-based penalty
             return base_penalty + time_penalty
 
         def calculate_win_reward(self, t, p, g, m, w, h, s):
@@ -182,13 +182,13 @@ class RitaLearner(ReinforcementLearner):
             Enhanced reward for winning trades
             """
             # Term 1: (p/g + 1)
-            term1 = ((p / g) + 1) ** 8
+            term1 = (p / g) + 1
 
             # Term 2: (m / (t^2 + m))
-            term2 = m / (t**2 + m)
+            term2 = m / (t**2 + (2 * m))
 
             # Term 3: w × (h+1)^2 × (s+1)
-            term3 = w * (h + 5) ** 2 * (s + 1)
+            term3 = w * (((5 * h) + 5) ** 2) * ((s + 1) ** 2)
 
             # Final result: product of all terms
             return term1 * term2 * term3
