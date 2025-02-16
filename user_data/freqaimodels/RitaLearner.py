@@ -185,10 +185,10 @@ class RitaLearner(ReinforcementLearner):
             term1 = (p / g) + 1
 
             # Term 2: (m / (t^2 + m))
-            term2 = m / (t**2 + (2 * m))
+            term2 = m / ((t / 1.5) ** 2 + (2 * m))
 
             # Term 3: w × (h+1)^2 × (s+1)
-            term3 = w * (((5 * h) + 5) ** 2) * ((s + 1) ** 2)
+            term3 = w * (((3 * h) + 1) ** 4) * ((s + 1) ** 2)
 
             # Final result: product of all terms
             return term1 * term2 * term3
